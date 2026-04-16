@@ -2,8 +2,8 @@ name: LogicPulse Workflow Pipeline
 
 on:
   schedule:
-    # Run every 2 days at 8:00 AM UTC
-    - cron: '0 8 */2 * *'
+    # Run every 2 days at 3:00 AM UTC
+    - cron: '0 3 */2 * *'
   
   workflow_dispatch:  # Allow manual trigger with category selection
     inputs:
@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         if: steps.should_run.outputs.run == 'true'
         run: |
-          cd LogicPulse/${{ matrix.category.name }}
+          cd ${{ matrix.category.name }}
           pip install --upgrade pip
           pip install -r requirements.txt
       
@@ -72,7 +72,7 @@ jobs:
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
           MAX_CONCURRENT_SUBCATEGORIES: 3
         run: |
-          cd LogicPulse/${{ matrix.category.name }}
+          cd ${{ matrix.category.name }}
           python scraper.py
       
       - name: Upload artifacts (backup)
@@ -81,11 +81,11 @@ jobs:
         with:
           name: ${{ matrix.category.name }}-results
           path: |
-            LogicPulse/${{ matrix.category.name }}/data/*.xlsx
-            LogicPulse/${{ matrix.category.name }}/data/images/*.jpg
-            LogicPulse/${{ matrix.category.name }}/data/images/*.png
-            LogicPulse/${{ matrix.category.name }}/data/images/*.gif
-            LogicPulse/${{ matrix.category.name }}/data/images/*.webp
+            ${{ matrix.category.name }}/data/*.xlsx
+            ${{ matrix.category.name }}/data/images/*.jpg
+            ${{ matrix.category.name }}/data/images/*.png
+            ${{ matrix.category.name }}/data/images/*.gif
+            ${{ matrix.category.name }}/data/images/*.webp
           retention-days: 7
       
       - name: Notify on failure
