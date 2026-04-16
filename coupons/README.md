@@ -78,11 +78,18 @@ s3://{bucket}/sheeel_data/
 - `old_price`, `special_price`
 - `availability`, `times_bought`
 - `description`
+- `brand` (optional - only when available)
 - `image_urls` (array - not flattened)
 - `s3_image_paths` (array - not flattened)
 - `features_specs` (array) + `feature_spec_0`, `feature_spec_1`, ... (flattened)
 - `box_contents`, `warranty` (single values)
 - `deal_time_left`, `discount_badge`
+- **Coupon-specific fields:**
+  - `deal_details` - Full description of the deal (التفاصيل)
+  - `valid_from` - Coupon valid start date (صالح من)
+  - `valid_until` - Coupon expiry date (صالح حتى)
+  - `coupon_location` - Location/address where coupon can be used (الموقع)
+  - `coupon_notes` - Terms, conditions, and usage notes (الملاحظات)
 - `subcategory` (name of the subcategory)
 - `url`, `scraped_at`
 

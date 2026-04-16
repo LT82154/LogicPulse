@@ -239,6 +239,82 @@ class CouponsScraper:
             discount_el = await detail_page.query_selector('.discount-percent-item')
             product_data['discount_badge'] = (await discount_el.inner_text()).strip() if discount_el else None
             
+            # ===== COUPON-SPECIFIC INFORMATION =====
+            
+            # Deal Details (التفاصيل)
+            details_section = await detail_page.query_selector('#details')
+            if details_section:
+                details_text = (await details_section.inner_text()).strip()
+                product_data['deal_details'] = details_text
+            else:
+                product_data['deal_details'] = None
+            
+            # Coupon Validation Dates (يمكن إستخدام الكوبون)
+            coupon_validation = await detail_page.query_selector('#coupon-validation')
+            if coupon_validation:
+                validation_items = await coupon_validation.query_selector_all('.validation-info')
+                for item in validation_items:
+                    text = (await item.inner_text()).strip()
+                    if 'صالح من' in text:
+                        # Extract "valid from" date
+                        product_data['valid_from'] = text.replace('صالح من :', '').replace('صالح من:', '').strip()
+                    elif 'صالح حتى' in text:
+                        # Extract "valid until" date
+                        product_data['valid_until'] = text.replace('صالح حتى:', '').replace('صالح حتى :', '').strip()
+                
+                # Set to None if not found
+                if 'valid_from' not in product_data:
+                    product_data['valid_from'] = None
+                if 'valid_until' not in product_data:
+                    product_data['valid_until'] = None
+            else:
+                product_data['valid_from'] = None
+                product_data['valid_until'] = None
+            
+            # Coupon More Info (معلومات الكوبون)
+            more_info_coupon = await detail_page.query_selector('#more-info-coupon')
+            if more_info_coupon:
+                # Get all content
+                content_text = (await more_info_coupon.inner_text()).strip()
+                
+                # Extract Location (الموقع)
+                location_label = await more_info_coupon.query_selector('.attribute-info.label')
+                if location_label:
+                    label_text = (await location_label.inner_text()).strip()
+                    if 'الموقع' in label_text:
+                        # Get the text node after location label
+                        location_text = await location_label.evaluate('node => node.nextSibling ? node.nextSibling.textContent : ""')
+                        product_data['coupon_location'] = location_text.strip() if location_text else None
+                    else:
+                        product_data['coupon_location'] = None
+                else:
+                    product_data['coupon_location'] = None
+                
+                # Extract Notes (الملاحظات)
+                notes_labels = await more_info_coupon.query_selector_all('.attribute-info.label')
+                notes_found = False
+                for label in notes_labels:
+                    label_text = (await label.inner_text()).strip()
+                    if 'الملاحظات' in label_text:
+                        # Get the UL element after the notes label
+                        notes_ul = await label.evaluate_handle('node => node.nextElementSibling')
+                        try:
+                            notes_items = await notes_ul.as_element().query_selector_all('li')
+                            notes_list = []
+                            for li in notes_items:
+                                notes_list.append((await li.inner_text()).strip())
+                            product_data['coupon_notes'] = ' | '.join(notes_list) if notes_list else None
+                            notes_found = True
+                        except:
+                            product_data['coupon_notes'] = None
+                        break
+                
+                if not notes_found:
+                    product_data['coupon_notes'] = None
+            else:
+                product_data['coupon_location'] = None
+                product_data['coupon_notes'] = None
+            
             # Extract features by section with labels
             more_info_container = await detail_page.query_selector('#more-info')
             if more_info_container:
