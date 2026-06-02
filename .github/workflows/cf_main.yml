@@ -15,6 +15,7 @@ on:
         options:
           - all
           - coupons
+          - flowers_chocolate_by_sogha
 
 jobs:
   scrape:
@@ -26,6 +27,8 @@ jobs:
         category:
           - name: coupons
             display_name: Coupons
+          - name: flowers_chocolate_by_sogha
+            display_name: Flowers & Chocolate by Sogha
 
     name: Scrape ${{ matrix.category.display_name }}
 
