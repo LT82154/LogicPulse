@@ -746,7 +746,7 @@ class FlowersChocolateBySoghaScraper:
             return
         
         # Step 2: Download images
-        self.download_all_images()
+        # self.download_all_images()  # disabled: image download only enabled for LogicPulse/coupons
         
         if self.r2_client:
             excel_path = self.upload_results_to_r2()
