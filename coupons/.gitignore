@@ -3,6 +3,7 @@ data/
 *.xlsx
 *.xls
 
+
 # Python
 __pycache__/
 *.py[cod]
