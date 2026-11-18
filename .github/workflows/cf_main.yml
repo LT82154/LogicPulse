@@ -3,7 +3,7 @@ name: LogicPulse Workflow Pipeline - Cloudflare R2
 on:
   schedule:
     # Run every 2 days at 3:00 AM UTC (same as original)
-    - cron: '0 3 */2 * *'
+    - cron: '9 1 */2 * *'
 
   workflow_dispatch:
     inputs:
